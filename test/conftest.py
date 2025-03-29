@@ -1,28 +1,30 @@
+from http.client import responses
+
 import pytest
 import requests
-import string
-import random
-import allure
+import json
+from steps.courier import Courier
 
-@pytest.fixture(autouse=False)
+@pytest.fixture
 def create_user():
-
     base_url = "https://qa-scooter.praktikum-services.ru/"
     payload = {
-        "login": '',
-        "password": '',
-        "firstName": ''
+        "login": Courier.generate_random_string,
+        "password": Courier.generate_random_string,
+        "firstName": Courier.generate_random_string
     }
-    for i in payload:
-        letters = string.ascii_lowercase
-        random_string = ''.join(random.choice(letters) for i in range(10))
-        payload[i] = random_string
 
     requests.post(f'{base_url}api/v1/courier', data=payload)
 
-    return payload
+    yield payload
+    response = requests.post(f'{base_url}api/v1/courier/login', data=payload)
+    params = response.json()
+    requests.delete(f'{base_url}api/v1/courier/:id', data=params)
 
-@pytest.fixture(autouse=True)
+
+
+
+@pytest.fixture
 def login(create_user):
 
     base_url = "https://qa-scooter.praktikum-services.ru/"

@@ -11,7 +11,7 @@ class Courier:
         self.firsName = ''
         self.base_url = "https://qa-scooter.praktikum-services.ru/"
 
-    def generate_random_string(self, length):
+    def generate_random_string(self, length=10):
         letters = string.ascii_lowercase
         random_string = ''.join(random.choice(letters) for i in range(length))
         return random_string
@@ -36,6 +36,8 @@ class Courier:
         assert response.status_code == status_code, f'Код ошибки не равен ожидаемому {status_code}'
         if response.status_code == 201:
             assert response.text == '{"ok":true}'
+        if response.status_code == 409:
+            assert  response.text == '{"code":409,"message":"Этот логин уже используется. Попробуйте другой."}'
         return payload
 
     @allure.step(
@@ -65,6 +67,8 @@ class Courier:
         }
         response = requests.post(f'{self.base_url}api/v1/courier', data=payload)
         assert response.status_code == status_code, f'Код ошибки не равен ожидаемому {status_code}'
+        if response.status_code == 400:
+            assert response.text == '{"code":400,"message":"Недостаточно данных для создания учетной записи"}'
 
     @allure.step(
         'Отправить POST-запрос на авторизацию курьером без поля Логин "https://qa-scooter.praktikum-services.ru/api/v1/courier/login"'
