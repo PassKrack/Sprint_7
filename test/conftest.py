@@ -1,8 +1,5 @@
-from http.client import responses
-
 import pytest
 import requests
-import json
 from steps.courier import Courier
 
 @pytest.fixture
@@ -20,9 +17,6 @@ def create_user():
     response = requests.post(f'{base_url}api/v1/courier/login', data=payload)
     params = response.json()
     requests.delete(f'{base_url}api/v1/courier/:id', data=params)
-
-
-
 
 @pytest.fixture
 def login(create_user):
